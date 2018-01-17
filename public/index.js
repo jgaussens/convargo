@@ -159,13 +159,42 @@ function computeShippingPrice(){
 }
 
 
+//Exercise 2
+function decreasePrice(){
+	deliveries.forEach(function(delivery){
+		var id = getTruckerId(delivery.truckerId);
+		if (id != 0){
+			delivery.price = delivery.distance*id.pricePerKm + delivery.volume*id.pricePerVolume;
+			if (delivery.volume > 25){
+				delivery.price = delivery.price * 0.5;
+			}
+			else if (delivery.volume > 10){
+				delivery.price = delivery.price * 0.7;
+			}
+			else if (delivery.volume > 5){
+				delivery.price = delivery.price * 0.9;
+			}
+		}
+		else{
+			console.log("Some id hasn't been found");
+		}
+	});
+}
+
+
+
+
 //Final logs
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
 
 //Exercise 1
-console.log("Computing deliveries prices");
+console.log("Computing deliveries prices - Exercise 1");
 computeShippingPrice();
 console.log(deliveries);
 
+//Exercise 2
+console.log("Computing deliveries prices with decreasing - Exercise 2");
+decreasePrice();
+console.log(deliveries);
