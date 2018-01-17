@@ -153,11 +153,15 @@ function computeShippingPrice(delivery) {
 		var pricePerVolume = id.pricePerVolume;
 		
 		if (delivery.volume > 25) {
-		pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.5;
+			pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.5;
 		} else if (id.volume > 10) {
-		pricePerVolume = trucker.pricePerVolume - id.pricePerVolume * 0.3;
+			pricePerVolume = trucker.pricePerVolume - id.pricePerVolume * 0.3;
 		} else if (id.volume > 5) {
-		pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.1;
+			pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.1;
+		}
+		
+		if (delivery.options.deductibleReduction){
+			pricePerVolume += 1;
 		}
 		
 		delivery.price += delivery.volume * pricePerVolume;
