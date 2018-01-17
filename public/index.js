@@ -35,21 +35,21 @@ var deliveries = [{
   },
   'price': 0,
   'commission': {
-    'insurance': 0,
+    'insurance': 0, 'treasury': 0,
     'convargo': 0
   }
 }, {
   'id': '65203b0a-a864-4dea-81e2-e389515752a8',
   'shipper': 'librairie-lu-cie',
   'truckerId': '165d65ec-5e3f-488e-b371-d56ee100aa58',
-  'distance': 500,
+  'distance': 650,
   'volume': 12,
   'options': {
     'deductibleReduction': true
   },
   'price': 0,
   'commission': {
-    'insurance': 0,
+    'insurance': 0, 'treasury': 0,
     'convargo': 0
   }
 }, {
@@ -63,7 +63,7 @@ var deliveries = [{
   },
   'price': 0,
   'commission': {
-    'insurance': 0,
+    'insurance': 0, 'treasury': 0,
     'convargo': 0
   }
 }];
@@ -131,10 +131,7 @@ const actors = [{
 
 
 
-//Exercise 1
-// formula: shipping price = distance + volume
-//distance component: the number of kilometers multiplied by the trucker price per km
-//volume component: the used volume multiplied by the trucker price per m3
+//Exercise 1 + 2
 
 function getTruckerId(id){ //Function useful to get access to a trucker id from another function
 	var ret = 0;
@@ -146,55 +143,56 @@ function getTruckerId(id){ //Function useful to get access to a trucker id from 
 	return ret;
 }
 
-function computeShippingPrice(){
+
+
+function computeShippingPrice(delivery) {
+	var id = getTruckerId(delivery.truckerId);
+	if (id != 0) {
+		
+		delivery.price = delivery.distance * id.pricePerKm;
+		var pricePerVolume = id.pricePerVolume;
+		
+		if (delivery.volume > 25) {
+		pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.5;
+		} else if (id.volume > 10) {
+		pricePerVolume = trucker.pricePerVolume - id.pricePerVolume * 0.3;
+		} else if (id.volume > 5) {
+		pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.1;
+		}
+		
+		delivery.price += delivery.volume * pricePerVolume;
+	}
+	else{
+		console.log("Some id hasn't been found");
+		return;
+	}
+	
+}
+
+//Exercise 3
+function computeCommission(){
 	deliveries.forEach(function(delivery){
-		var id = getTruckerId(delivery.truckerId);
-		if (id != 0){
-			delivery.price = delivery.distance*id.pricePerKm + delivery.volume*id.pricePerVolume;
-		}
-		else{
-			console.log("Some id hasn't been found");
-		}
+		var com = delivery.price * 0.3;
+		delivery.commission.insurance = com*0.5;
+		delivery.commission.treasury = Math.ceil(delivery.distance/500);
+		delivery.commission.convargo = com - delivery.commission.insurance - delivery.commission.treasury;
 	});
 }
 
+//Udating prices
+deliveries.forEach(function(delivery){
+	computeShippingPrice(delivery);
+	computeCommission();
+});
 
-//Exercise 2
-function decreasePrice(){
-	deliveries.forEach(function(delivery){
-		var id = getTruckerId(delivery.truckerId);
-		if (id != 0){
-			delivery.price = delivery.distance*id.pricePerKm + delivery.volume*id.pricePerVolume;
-			if (delivery.volume > 25){
-				delivery.price = delivery.price * 0.5;
-			}
-			else if (delivery.volume > 10){
-				delivery.price = delivery.price * 0.7;
-			}
-			else if (delivery.volume > 5){
-				delivery.price = delivery.price * 0.9;
-			}
-		}
-		else{
-			console.log("Some id hasn't been found");
-		}
-	});
-}
+//###Final logs###
+//console.log(truckers);
+//console.log(deliveries);
+//console.log(actors);
 
 
 
-
-//Final logs
-console.log(truckers);
-console.log(deliveries);
-console.log(actors);
-
-//Exercise 1
-console.log("Computing deliveries prices - Exercise 1");
-computeShippingPrice();
+console.log("i forked the project early before the course, so some values might be different from others projects");
 console.log(deliveries);
 
-//Exercise 2
-console.log("Computing deliveries prices with decreasing - Exercise 2");
-decreasePrice();
-console.log(deliveries);
+
