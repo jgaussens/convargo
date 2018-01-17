@@ -133,11 +133,28 @@ const actors = [{
 
 //Exercise 1
 // formula: shipping price = distance + volume
+//distance component: the number of kilometers multiplied by the trucker price per km
+//volume component: the used volume multiplied by the trucker price per m3
+
+function getTruckerId(id){ //Function useful to get access to a trucker id from another function
+	var ret = 0;
+	truckers.forEach(function(trucker){
+		if (trucker.id == id){
+			ret = trucker;
+		}
+	});
+	return ret;
+}
 
 function computeShippingPrice(){
-	
 	deliveries.forEach(function(delivery){
-		delivery.price = delivery.distance*delivery.volume
+		var id = getTruckerId(delivery.truckerId);
+		if (id != 0){
+			delivery.price = delivery.distance*id.pricePerKm + delivery.volume*id.pricePerVolume;
+		}
+		else{
+			console.log("Some id hasn't been found");
+		}
 	});
 }
 
@@ -148,6 +165,7 @@ console.log(deliveries);
 console.log(actors);
 
 //Exercise 1
+console.log("Computing deliveries prices");
 computeShippingPrice();
 console.log(deliveries);
 
