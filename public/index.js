@@ -129,6 +129,25 @@ const actors = [{
   }]
 }];
 
+
+
+//Exercise 1
+// formula: shipping price = distance + volume
+
+function computeShippingPrice(){
+	
+	deliveries.forEach(function(delivery){
+		delivery.price = delivery.distance*delivery.volume
+	});
+}
+
+
+//Final logs
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
+
+//Exercise 1
+computeShippingPrice();
+console.log(deliveries);
+
