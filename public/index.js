@@ -71,7 +71,7 @@ var deliveries = [{
 //list of actors for payment
 //useful from exercise 5
 const actors = [{
-  'deliveryId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
+  'rentalId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
   'payment': [{
     'who': 'shipper',
     'type': 'debit',
@@ -131,7 +131,7 @@ const actors = [{
 
 
 
-//Exercise 1 + 2
+// Practice Work
 
 function getTruckerId(id){ //Function useful to get access to a trucker id from another function
 	var ret = 0;
@@ -143,9 +143,19 @@ function getTruckerId(id){ //Function useful to get access to a trucker id from 
 	return ret;
 }
 
+function getDeliveryId(id){ //Function useful to get access to a delivery id from another function
+	var ret = 0;
+	deliveries.forEach(function(delivery){
+		if (delivery.id == id){
+			ret = delivery;
+		}
+	});
+	return ret;
+}
 
 
-function computeShippingPrice(delivery) {
+//Exercise 1 + 2 + 4
+function computeShippingPrice(delivery) {	//Computes the total shipping price, including the eventual deductible reduction
 	var id = getTruckerId(delivery.truckerId);
 	if (id != 0) {
 		
@@ -160,11 +170,12 @@ function computeShippingPrice(delivery) {
 			pricePerVolume = id.pricePerVolume - id.pricePerVolume * 0.1;
 		}
 		
-		if (delivery.options.deductibleReduction){
-			pricePerVolume += 1;
-		}
 		
 		delivery.price += delivery.volume * pricePerVolume;
+		
+		if (delivery.options.deductibleReduction == true ){ //deductible option
+			delivery.price += delivery.volume;
+		}
 	}
 	else{
 		console.log("Some id hasn't been found");
@@ -173,8 +184,8 @@ function computeShippingPrice(delivery) {
 	
 }
 
-//Exercise 3
-function computeCommission(){
+//Exercise3
+function computeCommission(){ //We compute the comissions for each actor (except customer of course)
 	deliveries.forEach(function(delivery){
 		var com = delivery.price * 0.3;
 		delivery.commission.insurance = com*0.5;
@@ -183,20 +194,52 @@ function computeCommission(){
 	});
 }
 
-//Udating prices
+
+ //Exercise 5
+function paymentTime(){ //
+	actors.forEach(function(actor){
+		var delivery = getDeliveryId(actor.rentalId);
+		actor.payment.forEach(function(actor){
+			
+			if (actor.who == 'shipper'){ //we could also have used a switch case here
+				actor.amount = delivery.price; //already contains price + possible deduction
+			}
+			if (actor.who == 'owner'){ //is owner the trucker ??
+				actor.amount = delivery.price - delivery.commission.insurance - delivery.commission.treasury - 												delivery.commission.convargo;
+			}
+			if (actor.who == 'insurance'){
+				actor.amount = delivery.commission.insurance;
+			}
+			if (actor.who == 'convargo'){
+				actor.amount = delivery.commission.convargo + delivery
+				if (delivery.options.deductibleReduction){
+				actor.amount += delivery.volume;
+				}
+			}
+		});
+	});
+}
+
+
+
+// "Main"
 deliveries.forEach(function(delivery){
 	computeShippingPrice(delivery);
-	computeCommission();
 });
+computeCommission();
+paymentTime();
+
 
 //###Final logs###
-//console.log(truckers);
-//console.log(deliveries);
-//console.log(actors);
-
-
-
 console.log("i forked the project early before the course, so some values might be different from others projects");
+console.log("");
+console.log("Prices computations after my functions:");
+console.log("Truckers Array:");
+console.log(truckers);
+console.log("Deliveries Array:");
 console.log(deliveries);
+console.log("Actors Array:");
+console.log(actors);
+
 
 
